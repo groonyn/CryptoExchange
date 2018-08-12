@@ -1,6 +1,2 @@
-# Play Authenticate sample Java application
-
-Authentication providers that require further configuration parameters
-are commented out in `app/module/MyModule.java`. Please review the configuration
-in `conf/play-authenticate/mine.conf` and reenable them if you want to
-use them.
+How to build+deploy:
+https://gyazo.com/4ff87118fe5b41e203c309f9b9e13ce8
