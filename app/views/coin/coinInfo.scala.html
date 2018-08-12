@@ -1,0 +1,201 @@
+@import models.coin.TradeBean
+@import service.UserProvider
+@(userProvider: UserProvider, tradeBean: TradeBean = null)
+
+@main(userProvider, Messages("playauthenticate.index.title"), "trade") {
+
+    <div class="row">
+        <div class="col-sm-3">
+
+            <div class="panel panel-default">
+                <div class="panel-body" style="text-align: center">
+                    <h3 class="align-middle" style="margin-top: 0px;"><b>@tradeBean.getSelectedCryptoExchangeName @tradeBean.getPairType.getSimpleString</b></h3>
+                    <span><b>@tradeBean.getPrice $</b></span>
+                    </table>
+                </div>
+            </div>
+
+
+            @views.html.coin.collapseComponent() {
+                <span>Exchanges</span>
+            } {
+                <div class="list-group" style="max-width: 400px;">
+                @for(exchangeName <- tradeBean.getCryptoExchangeNameList) {
+                    @defining(if(exchangeName == tradeBean.getSelectedCryptoExchangeName) "active" else "") { classActive =>
+                        <a href="@controllers.coin.routes.TradeController.trade(exchangeName.toString, "BTC_USD")" class="list-group-item list-group-item-action @classActive">@exchangeName</a>
+                    }
+                }
+                </div>
+            }
+
+
+            @views.html.coin.collapseComponent() {
+                <span>Tickers</span>
+            } {
+                <div class="list-group" style="max-width: 400px;">
+                @for(pair <- tradeBean.getPairList) {
+                    @defining(if(pair == tradeBean.getPairType) "active" else "") { classActive =>
+                        <a href="@controllers.coin.routes.TradeController.trade(tradeBean.getSelectedCryptoExchangeName.toString, pair.toString)" class="list-group-item list-group-item-action @classActive">@pair</a>
+                    }
+                }
+                </div>
+            }
+
+            @views.html.coin.collapseComponent(false) {
+                <span>Order form</span>
+            } {
+                TODO
+            }
+
+            @views.html.coin.collapseComponent(false) {
+                <span>Balances</span>
+            } {
+                TODO
+            }
+
+        </div>
+        <div class="col-sm-9">
+
+            @views.html.coin.collapseComponent() {
+                <span>Chart</span>
+            } {
+                    <!-- TradingView Widget BEGIN -->
+                <div class="tradingview-widget-container">
+                    <div id="tradingview_46dac"></div>
+                    <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/@tradeBean.getPairType.getPairTypeTradingView/" rel="noopener" target="_blank">
+                    </a></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <script type="text/javascript">
+                            new TradingView.widget(
+                                    {
+                                        "width": "100%",
+                                        "height": 480,
+                                        "symbol": "@tradeBean.getPairType.getPairTypeTradingView",
+                                        "interval": "H",
+                                        "timezone": "Etc/UTC",
+                                        "theme": "Light",
+                                        "style": "1",
+                                        "locale": "en",
+                                        "toolbar_bg": "#f1f3f6",
+                                        "enable_publishing": false,
+                                        "allow_symbol_change": true,
+                                        "container_id": "tradingview_46dac"
+                                    }
+                            );
+                    </script>
+                </div>
+                    <!-- TradingView Widget END -->
+            }
+
+            @views.html.coin.collapseComponent() {
+                <span>Positions</span>
+            } {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Pair</th>
+                            <th>Amount</th>
+                            <th>Laverage</th>
+                            <th>Open price</th>
+                            <th>Close price</th>
+                            <th>Stop loss</th>
+                            <th>Take profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for(position <- tradeBean.getPositions) {
+                        <tr>
+                            <td>@position.getPair</td>
+                            <td>@position.getOpenMoneyAmount</td>
+                            <td>@position.getLaverage</td>
+                            <td>@position.getOpenPrice</td>
+                            <td>@position.getCurrentClosePrice</td>
+                            <td>@position.getCryptoExchangeStopLossPrice</td>
+                            <td>@position.getTakeProfitPrice</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+
+            @views.html.coin.collapseComponent(false) {
+                <span>My orders</span>
+            } {
+                TODO
+            }
+
+            @views.html.coin.collapseComponent() {
+                <span>Order book</span>
+            } {
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        Sell orders:
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Price</th>
+                                    <th>Amount</th>
+                                    <th>Total cost(USD)</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="col-sm-6">
+                        Buy orders:
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Price</th>
+                                    <th>Amount</th>
+                                    <th>Total cost(USD)</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="pre-scrollable">
+                        <div class="col-sm-6">
+                            <table class="table table-striped">
+                                <tbody>
+                                @for(order <- tradeBean.getOrderBook.getSellOrders) {
+                                    <tr>
+                                        <td>@order.getPrice</td>
+                                        <td>@order.getAmount</td>
+                                        <td>@order.getTotalCost</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <table class="table table-striped">
+                                <tbody>
+                                @for(order <- tradeBean.getOrderBook.getBuyOrders) {
+                                    <tr>
+                                        <td>@order.getPrice</td>
+                                        <td>@order.getAmount</td>
+                                        <td>@order.getTotalCost</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @views.html.coin.collapseComponent(false) {
+                <span>Order history</span>
+            } {
+                TODO
+            }
+
+        </div>
+    </div>
+
+
+}

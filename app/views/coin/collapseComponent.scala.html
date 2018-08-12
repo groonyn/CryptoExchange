@@ -1,0 +1,45 @@
+@(opened: Boolean = true)(header: Html)(content: Html)
+
+@import java.lang.String; val randId = scala.util.Random.alphanumeric.filter(_.isDigit).take(10)
+
+<div class = "panel panel-default">
+    <div class = "panel-heading" style="padding: 5px">
+
+        <button class="btn btn-default btn-xs" type="button" data-toggle="collapse" data-target="#collapseExample@randId" aria-expanded="@opened" aria-controls="collapseExample@randId">
+            @defining(if(opened) "" else "hidden") { classHidden =>
+                <span class="glyphicon glyphicon-chevron-down @classHidden" aria-hidden="true" id="collapseExampleIcon@randId"></span>
+            }
+            @defining(if(!opened) "" else "hidden") { classHidden =>
+                <span class="glyphicon glyphicon-chevron-right @classHidden" aria-hidden="true" id="collapseExampleIcon2@randId"></span>
+            }
+
+        </button>
+        @header
+
+    </div>
+
+    <div class = "panel-body">
+
+    @defining(if(opened) "in" else "") { classIn =>
+        <div class="collapse @classIn" id="collapseExample@randId">
+            <div class="card card-body">
+            @content
+            </div>
+        </div>
+    }
+
+    </div>
+</div>
+<script type="text/javascript">
+        $('#collapseExample@randId').on('show.bs.collapse', function () {
+            $('#collapseExampleIcon@randId').removeClass("hidden");
+            $('#collapseExampleIcon2@randId').addClass("hidden");
+        })
+
+        $('#collapseExample@randId').on('hide.bs.collapse', function () {
+            $('#collapseExampleIcon@randId').addClass("hidden");
+            $('#collapseExampleIcon2@randId').removeClass("hidden");
+        })
+</script>
+
+
